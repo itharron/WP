@@ -65,7 +65,9 @@ s3c{C0ngrats_0n_gett1ng_s7ar7ed_w1th_M1sc}
 
 # WEB-HTTP-招新入门
 
-
+交给ai吧，还不太了解，
+虽然用过wireshark，burpsuite，看包，改包，发包，
+但是原理不清，逻辑链路不完整。
 
 # REVERSE-IdaGift-招新入门
 
