@@ -84,7 +84,7 @@ s3c{C0ngrats_0n_gett1ng_s7ar7ed_w1th_M1sc}
 ![alt text](image-4.png)
 进来了，根据提示，按下shift+f12
 ![alt text](image-5.png)
-太多了，逐行看看，发现有个base64
+太多了，先看看开头，发现有个base64
 ![alt text](image-6.png)
 放cyberchef看看
 ![alt text](image-7.png)
