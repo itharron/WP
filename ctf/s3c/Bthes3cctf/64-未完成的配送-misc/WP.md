@@ -1,11 +1,11 @@
-# 未记录 BRIDGES / Delivery Receipt · Forensics
+# 64 未完成的配送 · Misc
 
-- 分类：Forensics（Misc）｜ 分值：未记录 ｜ 状态：已解出（平台提交状态未记录）
+- 分类：Misc ｜ 分值：未记录 ｜ 状态：平台已解
 - 从抓包里的 HTTP 流量中取出带 XOR 奇偶校验的分片记录，重组、gunzip 后得到收货单，flag 在收货单末尾。
 
 ## 题目
 
-- 题号未记录，题名 BRIDGES / Delivery Receipt；附件为 `delivery_new.pcapng`（193,180 字节）。
+- 题号 64，题名「未完成的配送」（题面代号 BRIDGES / Delivery Receipt）；附件为 `delivery_new.pcapng`（193,180 字节）。
 - 收货单文本 132,999 字节、共 2063 行：表头是 `Order: DS-0427`，中间是 2048 行 `sample,relay,seal,load_g,rain_mm,check` 交接记录。
 - 文件末尾 `Recipient's message:` 一行就是 flag。
 
