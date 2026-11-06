@@ -14,7 +14,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 5 | IdaGift | Reverse | 200 | 平台已解 | [WP](05-ida-gift/WP.md) |
 | 7 | ClickTraining | Reverse | 290 | 平台已解 | [WP](07-click-training/WP.md) |
-| 9 | FlowerRoad | Misc | 500 | 平台已解 | [WP](09-flower-road/WP.md) |
+| 9 | FlowerRoad | Reverse | 401 | 平台已解 | [WP](09-flower-road/WP.md) |
 | 10 | CampusMaze | Reverse | 500 | 本地解出（平台未提交） | [WP](10-campus-maze/WP.md) |
 | 11 | 苏沐橙 | Reverse | 500 | 平台已解（一血） | [WP](11-sumucheng/WP.md) |
 | 21 | 不太正常的博客 | Web | 500 | 本地解出（平台未提交） | [WP](21-blog/WP.md) |
