@@ -12,31 +12,31 @@
 
 | 题号 | 题名 | 分类 | 分值 | 状态 | 链接 |
 | --- | --- | --- | --- | --- | --- |
-| 5 | IdaGift | Reverse | 200 | 平台已解 | [WP](05-ida-gift/WP.md) |
-| 7 | ClickTraining | Reverse | 290 | 平台已解 | [WP](07-click-training/WP.md) |
-| 9 | FlowerRoad | Reverse | 401 | 平台已解 | [WP](09-flower-road/WP.md) |
-| 10 | CampusMaze | Reverse | 500 | 本地解出（平台未提交） | [WP](10-campus-maze/WP.md) |
-| 11 | 苏沐橙 | Reverse | 500 | 平台已解（一血） | [WP](11-sumucheng/WP.md) |
-| 21 | 不太正常的博客 | Web | 500 | 本地解出（平台未提交） | [WP](21-blog/WP.md) |
-| 22 | UmbrellaLog | Misc | 500 | 平台已解 | [WP](22-umbrella-log/WP.md) |
-| 25 | 成绩单 | Web | 500 | 本地解出（平台未提交） | [WP](25-transcript/WP.md) |
-| 26 | 传一传 | Web | 279 | 本地解出（平台未提交） | [WP](26-upload/WP.md) |
-| 32 | 最好的语言.java | Web | 279 | 本地解出（平台未提交） | [WP](32-best-language-java/WP.md) |
-| 34 | Rsaaaa_ikun | Crypto | 600 | 本地解出（平台未提交） | [WP](34-rsaaaa-ikun/WP.md) |
-| 36 | DES | Crypto | 500 | 本地解出（平台未提交） | [WP](36-des/WP.md) |
-| 38 | 参数泄露 | Crypto | 445 | 本地解出（平台未提交） | [WP](38-parameter-leak/WP.md) |
-| 39 | rrrrrrsa1 | Crypto | 未记录 | 本地解出（平台未提交） | [WP](39-rrrrrrsa1/WP.md) |
-| 42 | BabyRSA | Crypto | 214 | 平台已解 | [WP](42-baby-rsa/WP.md) |
-| 44 | 古典密码 | Crypto | 200 | 平台已解 | [WP](44-classical-cipher/WP.md) |
-| 46 | EVA·二号机 | Pwn | 500 | 本地解出（平台未提交） | [WP](46-eva-unit02/WP.md) |
-| 47 | ONE PIECE～ | Pwn | 500 | 本地解出（平台未提交） | [WP](47-one-piece/WP.md) |
-| 48 | 帅气学长 | Misc | 401 | 平台已解 | [WP](48-handsome-senior/WP.md) |
-| 49 | 签个到吧 | Misc | 50 | 平台已解 | [WP](49-check-in/WP.md) |
-| 56 | BabyReverse | Reverse | 290 | 平台已解 | [WP](56-baby-reverse/WP.md) |
-| 61 | 栈？ | Pwn | 500 | 平台已解 | [WP](61-stack/WP.md) |
-| 67 | 怪兽 | AI | 未记录 | 平台已解（用户已提交） | [WP](67-monster/WP.md) |
-| 69 | 真~寻找学长 | OSINT | 500 | 平台已解 | [WP](69-find-senior/WP.md) |
-| 未记录 | BRIDGES / Delivery Receipt | Forensics（Misc） | 未记录 | 已解出（平台提交状态未记录） | [WP](00-bridges/WP.md) |
+| 未记录 | BRIDGES / Delivery Receipt | Forensics | 未记录 | 已解出（平台提交状态未记录） | [WP](00-bridges-forensics/WP.md) |
+| 5 | 5 IdaGift | Reverse | 200 | 平台已解 | [WP](05-ida-gift-reverse/WP.md) |
+| 7 | 7 ClickTraining | Reverse | 290 | 平台已解 | [WP](07-click-training-reverse/WP.md) |
+| 9 | 9 FlowerRoad | Reverse | 401 | 平台已解 | [WP](09-flower-road-reverse/WP.md) |
+| 10 | 10 CampusMaze | Reverse | 500 | 本地解出（平台未提交） | [WP](10-campus-maze-reverse/WP.md) |
+| 11 | 11 苏沐橙 | Reverse | 500 | 平台已解（一血） | [WP](11-sumucheng-reverse/WP.md) |
+| 21 | 21 不太正常的博客 | Web | 500 | 本地解出（平台未提交） | [WP](21-blog-web/WP.md) |
+| 22 | 22 UmbrellaLog | Misc | 500 | 平台已解 | [WP](22-umbrella-log-misc/WP.md) |
+| 25 | 25 成绩单 | Web | 500 | 本地解出（平台未提交） | [WP](25-transcript-web/WP.md) |
+| 26 | 26 传一传 | Web | 279 | 本地解出（平台未提交） | [WP](26-upload-web/WP.md) |
+| 32 | 32 最好的语言.java | Web | 279 | 本地解出（平台未提交） | [WP](32-best-language-java-web/WP.md) |
+| 34 | 34 Rsaaaa_ikun | Crypto | 600 | 本地解出（平台未提交） | [WP](34-rsaaaa-ikun-crypto/WP.md) |
+| 36 | 36 DES | Crypto | 500 | 本地解出（平台未提交） | [WP](36-des-crypto/WP.md) |
+| 38 | 38 参数泄露 | Crypto | 445 | 本地解出（平台未提交） | [WP](38-parameter-leak-crypto/WP.md) |
+| 39 | 39 rrrrrrsa1 | Crypto | 未记录 | 本地解出（平台未提交） | [WP](39-rrrrrrsa1-crypto/WP.md) |
+| 42 | 42 BabyRSA | Crypto | 214 | 平台已解 | [WP](42-baby-rsa-crypto/WP.md) |
+| 44 | 44 古典密码 | Crypto | 200 | 平台已解 | [WP](44-classical-cipher-crypto/WP.md) |
+| 46 | 46 EVA·二号机 | Pwn | 500 | 本地解出（平台未提交） | [WP](46-eva-unit02-pwn/WP.md) |
+| 47 | 47 ONE PIECE～ | Pwn | 500 | 本地解出（平台未提交） | [WP](47-one-piece-pwn/WP.md) |
+| 48 | 48 帅气学长 | Misc | 401 | 平台已解 | [WP](48-handsome-senior-misc/WP.md) |
+| 49 | 49 签个到吧 | Misc | 50 | 平台已解 | [WP](49-check-in-misc/WP.md) |
+| 56 | 56 BabyReverse | Reverse | 290 | 平台已解 | [WP](56-baby-reverse-reverse/WP.md) |
+| 61 | 61 栈？ | Pwn | 500 | 平台已解 | [WP](61-stack-pwn/WP.md) |
+| 67 | 67 怪兽 | AI | 未记录 | 平台已解（用户已提交） | [WP](67-monster-ai/WP.md) |
+| 69 | 69 真~寻找学长 | OSINT | 500 | 平台已解 | [WP](69-find-senior-osint/WP.md) |
 
 ## 未收录说明
 
