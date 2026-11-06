@@ -13,6 +13,9 @@ czNje1dlbGMwbWVfMjAyNl9TM0N9    ？这也是base64，标志之一是末尾补充
 
 s3c{Welc0me_2026_S3C}
 
+
+
+
 # MISC-Misc入门指北-招新入门
 
 先看文件类型：pdf
@@ -70,38 +73,6 @@ s3c{zhe_ti_you_dian_gu_lao}
 
 
 
-# WEB-HTTP-招新入门
-
-交给ai吧，还不太了解，
-虽然用过wireshark，burpsuite，看包，改包，发包，
-但是原理不清，逻辑链路不完整。
-
-# PWN-栈？-招新入门
-
-nc 进入
-
-
-
-# PWN-EVA-招新入门
-
-![alt text](image-22.png)
-
-![alt text](image-23.png)
-
-![alt text](image-24.png)
-
-![alt text](image-25.png)
-
-![alt text](image-26.png)
-
-![alt text](image-27.png)
-
-![alt text](image-28.png)
-
-![alt text](image-29.png)
-
-![alt text](image-30.png)
-
 
 # REVERSE-IdaGift-招新入门
 
@@ -140,3 +111,44 @@ nc 进入
 ![alt text](image-34.png)
 
 ![alt text](image-36.png)
+
+
+
+
+
+# WEB-HTTP-招新入门
+
+交给ai吧，还不太了解，
+虽然用过wireshark，burpsuite，看包，改包，发包，
+但是原理不清，逻辑链路不完整。
+
+
+
+
+
+# PWN-栈？-招新入门
+
+nc 进入
+
+
+
+
+# PWN-EVA-招新入门
+
+![alt text](image-22.png)
+
+![alt text](image-23.png)
+
+![alt text](image-24.png)
+
+![alt text](image-25.png)
+
+![alt text](image-26.png)
+
+![alt text](image-27.png)
+
+![alt text](image-28.png)
+
+![alt text](image-29.png)
+
+![alt text](image-30.png)
