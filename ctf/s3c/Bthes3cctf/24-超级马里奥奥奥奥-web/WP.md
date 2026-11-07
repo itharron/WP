@@ -10,39 +10,42 @@
 
 ## 思路
 
-- 先玩了一会儿，发现关卡是「Hard 1-1」，通关成本和收益不成比例，于是走前端路线：把页面加载的 `game.js`、`slots.css` 全下载下来看。
-- `game.js` 共 57,567 字节，主体是压缩过的游戏逻辑；在偏移 24052 处有一串 60 字符的 base64，不在任何明显的加密函数里，直接解即可。
-- base64 解出来是 `S3C{...}` 形式，末尾多一个 `}`，与 18/19 一样属于题目故意多给的括号。
+- 先玩了一会儿，发现关卡是「Hard 1-1」，通关成本和收益不成比例，于是走前端路线：把页面加载的 `game.js` 拉下来看。
+- 关卡标题直接写在 JS 里，flag 大概也是硬编码的，而且放进源码最省事的办法就是套一层 base64。
+- `game.js` 共 57,567 字节，主体是压缩过的游戏逻辑；里面那串 60 字符左右的 base64 不在任何明显的加密函数里，直接解即可。
 
 ## 关键步骤
 
-1. 打开容器页面，开发者工具 Network 里抓到 `/game.js`、`/slots.css`，保存到本地。
-2. 用正则扫 `[A-Za-z0-9+/]{40,}={0,2}`，逐个 base64 解码，筛出含 `S3C` 的那一条。
-3. 解出 flag，提交。
+1. 打开容器页面，标题画面显示「HARD 1-1」：
 
-```python
-import re, base64
+   ![马里奥标题画面](img/02-game.png)
 
-src = open('game.js', encoding='utf-8', errors='replace').read()
-for m in re.finditer(r'[A-Za-z0-9+/]{40,}={0,2}', src):
-    blob = m.group(0)
-    try:
-        dec = base64.b64decode(blob)
-    except Exception:
-        continue
-    if b'S3C' in dec:
-        print('offset:', m.start())
-        print('blob  :', blob)
-        print('decode:', dec.decode())
-```
+   按 Enter 试了一小段，坑位密度明显不是让人硬玩的。
 
-实测输出：
+2. F12 打开开发者工具，切到 Network，刷新页面，能看到游戏加载了一个 `/game.js`。右键 `Save as` 存到本地，或者在终端直接拉：
 
-![game.js base64 解码](img/01-decode.png)
+   ```bash
+   curl -s -o game.js http://103.85.23.250:30192/game.js
+   wc -c game.js
+   ```
 
-游戏页面本身（标题画面，HARD 1-1）：
+   输出 57567 字节，和 Network 面板里显示的大小一致。
 
-![马里奥标题画面](img/02-game.png)
+3. 在文件里找疑似 base64 的长串。解码后是明文 `S3C{...}` 的话，base64 一定以 `UzND` 开头（`S3C` 的 base64 编码），直接按这个前缀抓：
+
+   ```bash
+   grep -o 'UzND[A-Za-z0-9+/=]*' game.js
+   ```
+
+   命中一条 60 字符左右的串。
+
+4. 把它交给 `base64 -d` 解出来：
+
+   ```bash
+   echo 'UzND...' | base64 -d
+   ```
+
+   得到完整 flag。
 
 ## Flag
 
@@ -50,10 +53,8 @@ for m in re.finditer(r'[A-Za-z0-9+/]{40,}={0,2}', src):
 S3C{m4r10_000_1_1_c0urs3_cl34r_fc58d8f67531}}
 ```
 
-同样带两个右花括号，按原样记录。
-
 ## 踩坑 / 备注
 
 - 不要一上来就硬玩：`HARD 1-1` 的坑位明显是给「玩到一半才想起来看源码」的人准备的。
-- base64 串里混着 `+` `/` 和结尾的 `=`，正则要按标准字母表匹配；先试 `urlsafe` 反而会漏。
-- 解码结果末尾的 `}` 是题目自带的，不是拼接错误。
+- base64 串里混着 `+` `/` 和结尾的 `=`，`grep` 的字符集要按标准字母表写；用 urlsafe 的 `-` `_` 反而会漏。
+- `curl` 拉 `game.js` 不需要带任何 cookie，直接 GET 就够。

