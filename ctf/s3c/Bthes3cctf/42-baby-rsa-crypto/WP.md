@@ -61,6 +61,8 @@ c = pow(m, e, n)
    b's3c{welcome_to_cryptography}'
    ```
 
+求 `d` 和解密同样是直接敲在 python 解释器里一步步算的，没有留下终端截图；分解那一步也只记下了 `p`、`q` 的结果。
+
 ## Flag
 
 ```text

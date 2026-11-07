@@ -55,6 +55,8 @@ c = pow(m, e, n)
    b's3c{I_am_iron_man!!!}'
    ```
 
+当时这些式子是直接敲在 python 解释器里算的，没有留下终端截图。
+
 ## Flag
 
 ```text
