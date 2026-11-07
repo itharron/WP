@@ -18,17 +18,36 @@
 
 ## 关键步骤
 
-1. 取末行 `a3s{xbg_hi_qyo_zier_uo_dey}`，只对字母做变换，括号与下划线原样保留。
+1. 打开 `ciphertext.txt`，看到四段英文，最后一行是 `a3s{xbg_hi_qyo_zier_uo_dey}`：
 
-2. 由 `s3c` / `a3s` 对位定出 `a = 7`、`b = 4`，并与「凯撒 11 位 + 仿射 7x+5」做等价性核对。
+   ![附件密文：四段英文 + 被加密的末行](img/01-ciphertext.png)
 
-3. 套逆变换，末行还原为 `s3c{zhe_ti_you_dian_gu_lao}`。
+2. 打开 `加密流程.txt`，记下两层：凯撒 → 仿射 `C = (7x + 5) mod 26`，flag 以 `s3c{}` 包裹。
 
-![附件密文：四段英文 + 被加密的末行](img/01-ciphertext.png)
+3. 拿已知前缀 `s3c` 和密文 `a3s` 逐位对：
 
-4. 把同一个逆变换套到全文，英文段落恢复成可读结构（此时还残留凯撒那一层）。
+   ```text
+   p(=s)=18 -> C(=a)=0
+   p(=3)     不变
+   p(=c)= 2 -> C(=s)=18
+   ```
 
-![运行输出：仿射参数 a=7 b=4 与末行还原结果](img/02-run.png)
+   解方程组 `18a + b ≡ 0`、`2a + b ≡ 18 (mod 26)`，得 `16a ≡ 8 → a = 7`，代回 `b = 4`。
+
+4. 核对 `b`：流程里凯撒的位移是 11，`7·11 + 5 = 82 ≡ 4 (mod 26)`，与反解值一致；反过来按 `-11` 算会得 `b = 6`，拿它去解 `a3s` 会得到 `d3n`，对不上，所以位移方向是 `+11`。
+
+5. 在 python 交互环境里写一行逆变换，把末行解出来：
+
+   ```python
+   >>> from string import ascii_lowercase as L
+   >>> dec = lambda s: ''.join(L[(15*(L.index(ch)-4)) % 26] if ch in L else ch for ch in s)
+   >>> dec('a3s{xbg_hi_qyo_zier_uo_dey}')
+   's3c{zhe_ti_you_dian_gu_lao}'
+   ```
+
+6. 把同一个 `dec` 套到全文，英文段落恢复成可读句子（还残留着凯撒那一层，但已经能确认变换正确）：
+
+   ![仿射逆变换后的全文](img/02-run.png)
 
 ## Flag
 

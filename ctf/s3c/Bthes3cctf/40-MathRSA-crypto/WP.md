@@ -24,24 +24,36 @@ c = pow(m, e, n)
 
 ## 关键步骤
 
-```python
-from Crypto.Util.number import long_to_bytes, inverse
+1. 解压 `MathRSA.zip`，打开 `MathRSA.py`。脚本把 `x`、`y`、`n`、`c` 以注释形式写在文件末尾，先把这四个大整数抄下来。
+2. 在纸上把 `x` 的前四项按 `y = 2p + 3q` 做因式分解，得到 `x = (p+q)(y² - 2025) + 2025e`，于是知道 `x - 2025e` 应该能被 `y² - 2025` 整除。
+3. 开一个 python 交互环境，把这四个数粘进去，先验证整除：
 
-yr = y*y - 2025
-s = (x - 2025*e) // yr
-assert (x - 2025*e) % yr == 0
+   ```python
+   >>> x, y, n, c, e = <粘贴附件里的四个数>, 65537
+   >>> (x - 2025*e) % (y*y - 2025)
+   0
+   ```
 
-p = 3*s - y
-q = y - 2*s
-assert p*q == n
+   余数是 0，说明推导没错。
 
-d = inverse(e, (p-1)*(q-1))
-print(long_to_bytes(pow(c, d, n)))
-```
+4. 顺着算 `p`、`q`，并验证乘积等于 `n`：
 
-实测输出（p、q 反解成功，`p*q == n` 为 True）：
+   ```python
+   >>> s = (x - 2025*e) // (y*y - 2025)
+   >>> p = 3*s - y
+   >>> q = y - 2*s
+   >>> p*q == n
+   True
+   ```
 
-![MathRSA 解算](img/01-solve.png)
+5. 剩下就是标准 RSA：
+
+   ```python
+   >>> from Crypto.Util.number import long_to_bytes
+   >>> d = pow(e, -1, (p-1)*(q-1))
+   >>> long_to_bytes(pow(c, d, n))
+   b's3c{I_am_iron_man!!!}'
+   ```
 
 ## Flag
 
@@ -53,3 +65,4 @@ s3c{I_am_iron_man!!!}
 
 - 别急着上 sympy 解三次方程：`y=2p+3q` 就是为因式分解量身定做的，`x` 的常数项 `2025*e` 是唯一不能并入 `p+q` 的部分，先把它减掉。
 - 注意本题是小写 `s3c{...}`，与本场多数题的 `S3C{}` 不同，按原样记录。
+- `p`、`q` 解出来是 1024 位，`p*q == n` 这一步一定要跑，算错一位后面全废。
