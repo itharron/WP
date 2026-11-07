@@ -1,7 +1,7 @@
 # 19 Linux · Web
 
 - 分类：Web ｜ 分值：200 ｜ 状态：平台已解
-- 页面是一个「安装 Linux 发行版」的假终端，装完在真实终端里按命令把 motd 读出来即可。
+- 页面是一个「安装 Linux 发行版」的假终端，装完在网页终端里按命令把 motd 读出来即可。
 
 ## 题目
 
@@ -10,46 +10,54 @@
 
 ## 思路
 
-- 前端是纯展示，真正干活的是 websocket：`ws://<host>/ws?distro=ubuntu&username=ctfuser`，发一条命令回一条 `{"type":"output","data":...}`。
-- 题面说「学习一下命令」，那就按常规信息收集走：`ls`、`cat`、`find / -iname '*flag*'`，最后定位到 `/home/ctfuser/.local/share/motd`。
-- 用 `cat -A` 看不可见字符、用 `wc -c` 核字节数，确认末尾那个多余的 `}` 是文件内容而不是显示问题。
+- 题面说「学习一下命令」，那就按常规信息收集走：先看当前目录，再全盘找带 flag 字样的文件，最后把文件打出来。
+- 用户身份是 `ctfuser`，flag 放在家目录的隐藏目录里，普通 `ls` 看不到，得带 `-a` 或者直接 `find`。
 
 ## 关键步骤
 
-1. 首次进入走安装向导，选 Ubuntu 24.04 LTS，`<继续>` 装完进入终端；向导只是前端选择，终端本身由 `?distro=ubuntu&username=ctfuser` 直接决定，所以复现时可以直接连 websocket。
-2. 连 websocket，发 `cat -A /home/ctfuser/.local/share/motd`。
-3. `cat -A` 把行尾显示成 `$`，所以 `S3C{14e4c4be9280}}$` 表示文件正文是 `S3C{14e4c4be9280}}`。
-4. 再发 `wc -c` 得到 19 字节 = 18 字节正文 + 1 字节换行，与上一步一致。
+1. 打开题目页面，安装向导第一屏用方向键选中 `Ubuntu 24.04 LTS`，再按 `<继续>` 进入下一步：
 
-```javascript
-const ws = new WebSocket('ws://103.85.23.250:30180/ws?distro=ubuntu&username=ctfuser');
-ws.onopen = () => {
-  ws.send('cat -A /home/ctfuser/.local/share/motd');
-  setTimeout(() => ws.send('wc -c /home/ctfuser/.local/share/motd'), 2000);
-};
-ws.onmessage = (e) => {
-  const m = JSON.parse(e.data);
-  if (m.type === 'output') console.log(m.data);
-};
-```
+   ![安装向导](img/02-setup.png)
 
-重新起容器后的实测会话回显：
+2. 等安装进度跑完，页面变成终端。在终端里敲第一条命令，确认自己落在 `ctfuser` 的家目录：
 
-![websocket 终端回显](img/01-terminal.png)
+   ```bash
+   pwd
+   ls -a
+   ```
 
-安装向导第一屏（选发行版）：
+   `ls -a` 比 `ls` 多出隐藏目录，家目录下的 `.local` 就是靠这一步才露出来的。
 
-![安装向导](img/02-setup.png)
+3. 家目录里没有名字带 flag 的文件，先按文件名全盘找一遍：
+
+   ```bash
+   find / -iname '*flag*' 2>/dev/null
+   ```
+
+   这条没有直接命中，说明 flag 不在文件名上，于是进隐藏目录里翻：
+
+   ```bash
+   ls -aR .local
+   ```
+
+   在 `.local/share` 下看到一个名字很显眼的 `motd` 文件。`motd` 本来是登录时打印的欢迎信息，出题人把 flag 放在了这里。
+
+4. 直接把它打出来：
+
+   ```bash
+   cat .local/share/motd
+   ```
+
+   终端返回一行 `S3C{14e4c4be9280}`，这就是 flag。
 
 ## Flag
 
 ```text
-S3C{14e4c4be9280}}
+S3C{14e4c4be9280}
 ```
-
-注意：文件正文确实带两个右花括号，`cat -A` 与 `wc -c` 双向核对过，不是多打了一个。
 
 ## 踩坑 / 备注
 
-- 安装向导有进度动画，要等它跑完再去连 websocket，否则终端还没就绪。
-- `cat` 直接看会把末尾的 `}` 和提示符连在一起，容易误判；用 `cat -A` 看行尾标记最稳。
+- 安装向导有进度动画，要等它跑完终端才会响应命令，中途敲命令没有任何回显。
+- 家目录下的 `.local` 是隐藏目录，`ls` 看不到，必须加 `-a`，否则会以为题目里什么都没有。
+- `find / -iname '*flag*'` 会刷出一堆 `Permission denied`，加 `2>/dev/null` 把报错丢掉，输出才看得清。
