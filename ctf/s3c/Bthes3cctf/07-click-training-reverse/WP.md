@@ -41,7 +41,7 @@
 
 4. 全文件只有这一处 `s3c{...}` 命中，不存在同名诱饵，可以直接作为答案：
 
-   ![字符串扫描命中](img/02-flag.png)
+   ![字符串扫描命中（Windows PowerShell 环境下的记录）](img/02-flag.png)
 
 ## Flag
 

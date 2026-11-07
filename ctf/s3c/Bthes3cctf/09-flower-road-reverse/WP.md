@@ -51,7 +51,7 @@
 
 6. 把它粘回程序运行，程序自己输出 `correct`，闭环。
 
-![运行输出](img/02-run.png)
+![运行输出（Windows PowerShell 环境下的记录）](img/02-run.png)
 
 ## Flag
 

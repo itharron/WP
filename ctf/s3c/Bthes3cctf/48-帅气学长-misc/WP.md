@@ -32,7 +32,7 @@ type flag.txt
 
 3. `steghide info` 复核载体信息：`embedded file "flag.txt"`，25 字节，`encrypted: rijndael-128, cbc`，`compressed: yes`——确实是把数据嵌进了 DCT 系数。
 
-![steghide 用 backtotheground 成功提取并写出 flag.txt](img/02-steghide.png)
+![steghide 用 backtotheground 成功提取并写出 flag.txt（Windows PowerShell 环境下的记录）](img/02-steghide.png)
 
 ## Flag
 

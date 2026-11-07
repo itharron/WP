@@ -23,7 +23,7 @@
 
 3. 字符串列表最上面那条不太对劲——`czNjezFkNF9zdHIxbmdzX2cxZnRfMjAyNn0=`，比普通文案长得多，还是 `=` 结尾。双击跳过去，可以看到它就躺在 `.rdata` 起始处，紧跟着一条 `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/`，那是标准的 base64 字母表：
 
-   ![.rdata 起始处的字符串](img/01-rdata-scan.png)
+   ![.rdata 起始处的字符串（Windows PowerShell 环境下的记录）](img/01-rdata-scan.png)
 
 4. 顺手把整个文件搜一遍 `s3c{`，没有任何明文命中，进一步确认要解的就是这条串。
 
@@ -35,7 +35,7 @@
 
    得到 26 字节明文 `s3c{1d4_str1ngs_g1ft_2026}`，形态和长度都对。
 
-   ![base64 解码结果](img/02-base64-decode.png)
+   ![base64 解码结果（Windows PowerShell 环境下的记录）](img/02-base64-decode.png)
 
 ## Flag
 

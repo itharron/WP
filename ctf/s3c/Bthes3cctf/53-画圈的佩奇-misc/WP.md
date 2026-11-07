@@ -83,7 +83,7 @@ M Y Y O U N G E R B R O T H E R G E O R G E
 
 真实运行输出（含切分、逐个映射、比对、flag）：
 
-![解码输出](img/03-decode.png)
+![解码输出（Windows PowerShell 环境下的记录）](img/03-decode.png)
 
 ## Flag
 
