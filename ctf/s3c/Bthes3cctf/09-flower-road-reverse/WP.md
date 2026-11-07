@@ -18,16 +18,38 @@
 
 ## 关键步骤
 
-1. 解析 PE 节表，建立 RVA → 文件偏移的映射（`.text`、`.rdata`、`.data` 的 RVA 不能混用）。
-2. 在 `.text` 里按 RIP 相对寻址的 `lea` 目标定位字符串引用，得到 main `0x140001350`、`check_flag` `0x140001250`、`transform` `0x140001110`。
-3. `transform` 里的恒假条件全是代数陷阱，化简后等价于：
-   `c ^= (19i+0x37)&0xff; c += (7i+0x5b)&0xff; c = rol8(c,(i%5)+1); return c ^ 0xC3`。
-4. 从 `.rdata:0x1D340` 取 39 字节期望表，按 `ror8 → 减 → 异或` 逆推每个字符。
-5. 用脚本直接读表并还原，输出 39 字符，长度与 `0x27` 吻合。
+1. 用 IDA 打开 `FlowerRoad.exe`，等分析完成后在 Functions window 里看到 `main`、`check_flag`、`transform` 三个函数，双击进 `main` 按 F5 反编译。
+
+2. `main` 里那个 `n(n+1) & 1 == 1` 的分支直接跳过——`n(n+1)` 恒为偶数，这个条件永远不成立，它下面打印的就是假 flag。真正干活的是 `check_flag`，进去先看到 `strlen(input) == 0x27`，再拿 `.rdata` 里一张 39 字节的表逐字节比对。
+
+3. 再进 `transform` 看逐字节变换。里面的恒假条件全是代数陷阱，化简之后只剩四步：
+
+   ```text
+   c ^= (19i + 0x37) & 0xff
+   c += (7i + 0x5b) & 0xff
+   c = rol8(c, (i % 5) + 1)
+   c ^= 0xC3
+   ```
+
+4. 39 个字符逐个反推是批量活，手工算不动，这一步用脚本完成。把 `.rdata:0x1D340` 起始的 39 字节期望表从 IDA 里复制出来，写成列表喂给脚本，按上面的逆序（先异或 `0xC3`、再 `ror8`、再减、再异或）逐位还原：
+
+   ```python
+   tbl = [0x00, 0x00, ...]   # 从 IDA 复制的 39 字节
+   out = []
+   for i, y in enumerate(tbl):
+       y ^= 0xC3
+       y = ((y >> ((i % 5) + 1)) | (y << (8 - (i % 5) - 1))) & 0xff   # ror8
+       y = (y - (7*i + 0x5b)) & 0xff
+       y ^= (19*i + 0x37) & 0xff
+       out.append(chr(y))
+   print(''.join(out))
+   ```
 
 ![逆变换脚本](img/01-solve.png)
 
-6. 把结果回代给原程序，程序自己输出 `correct`，闭环。
+5. 脚本输出 39 字符，长度与 `0x27` 吻合：`s3c{Y0u_f0und_th3_road_thr0ugh_fl0w3rs}`。
+
+6. 把它粘回程序运行，程序自己输出 `correct`，闭环。
 
 ![运行输出](img/02-run.png)
 
