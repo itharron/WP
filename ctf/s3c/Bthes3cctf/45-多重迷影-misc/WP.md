@@ -16,22 +16,52 @@
 
 ## 关键步骤
 
-```python
-import base64
+1. 解压后打开 `多重迷影.txt`，满屏 emoji，没有别的提示。88 个字符的码位批量偏移手工做不到，这一步用一行 python 完成：
 
-s = open('多重迷影.txt', encoding='utf-8').read()
-cps = [ord(c) for c in s if ord(c) > 0x2000]
+   ```bash
+   python -c "print(''.join(chr(ord(c)-0x1F3F7) for c in open('多重迷影.txt',encoding='utf-8').read() if ord(c)>0x2000))" > l1.txt
+   cat l1.txt
+   ```
 
-raw = bytes(c - 0x1F3F7 for c in cps)      # -> base64 文本
-l2 = base64.b64decode(raw).decode()        # -> base32 文本
-l3 = base64.b32decode(l2).decode()         # -> hex 文本
-l4 = bytes.fromhex(l3).decode()            # -> l3v{atox_t_gbvx_wtr}
-flag = ''.join(chr((ord(c)-97+7) % 26 + 97) if c.isalpha() else c for c in l4)
-```
+   偏移量 `0x1F3F7` 是试出来的：先打印几个码位，再用「减完要落在可打印 ASCII」这个条件反推，一次就对齐了。`l1.txt` 里是一串以 `==` 结尾的标准 base64。
 
-实测四层输出：
+2. 第二层，直接交给 `base64`：
 
-![四层解码](img/01-decode.png)
+   ```bash
+   base64 -d l1.txt > l2.txt
+   cat l2.txt
+   ```
+
+   结果只含 `A-Z2-7` 和大写字母，末尾是 `=`，典型的 base32。
+
+3. 第三层：
+
+   ```bash
+   base32 -d l2.txt > l3.txt
+   cat l3.txt
+   ```
+
+   得到一串十六进制。
+
+4. 第四层，十六进制转回字节：
+
+   ```bash
+   xxd -r -p l3.txt
+   ```
+
+   输出 `l3v{atox_t_gbvx_wtr}`，形状已经是 flag，只是每个字母整体偏了 7 位。
+
+5. 凯撒回推 7 位：
+
+   ```bash
+   echo 'l3v{atox_t_gbvx_wtr}' | tr 'a-z' 'h-za-g'
+   ```
+
+   得到 `s3c{have_a_nice_day}`，四层走完。
+
+   四层解码的完整输出记录：
+
+   ![四层解码](img/01-decode.png)
 
 ## Flag
 
@@ -43,3 +73,4 @@ s3c{have_a_nice_day}
 
 - 偏移值不是常见的 `0x1F000` 一类整数，`0x1F3F7` 是通过「让首字节落在可打印 ASCII」反推出来的，可以写个小循环暴力试 0x1000 个偏移。
 - 每一层都要求「解出来仍是可打印文本」再继续，否则很容易在错的分支上越走越远。
+- 凯撒的方向别看反：`l → s` 是加 7，`tr 'a-z' 'h-za-g'` 就是加 7 的写法。

@@ -10,40 +10,47 @@
 
 ## 思路
 
-- 纯文本提取每页，正文是正常教程，但每页最后一行都有个 `[memo]` 开头的小尾巴——四段碎片。
+- 打开附件翻一遍，正文是正常教程，但每页最后一行都有个 `[memo]` 开头的小尾巴——四段碎片。
 - 碎片本身是乱序的：`s7ar7ed_w1th_`、`s3c{C0ngrats_`、`M1sc}`、`0n_gett1ng_`，直接拼不成话。
 - 第 3 页正文里写了「顺序记在文档属性里」，去读 PDF 元数据，`Subject = memo-order: 2,4,1,3`。
 - 按 2→4→1→3 拼起来就是完整 flag。
 
 ## 关键步骤
 
-```python
-from pypdf import PdfReader
+1. 用阅读器打开 PDF，从第 1 页翻到第 4 页，记下每页末尾 `[memo]` 后面的那截字符串。第 2 页的碎片是 `s3c{C0ngrats_`：
 
-r = PdfReader('Misc入门指北.pdf')
-parts = {}
-for i, page in enumerate(r.pages, 1):
-    lines = [x.strip() for x in (page.extract_text() or '').splitlines() if x.strip()]
-    memo = [x for x in lines if x.startswith('[memo]')]
-    if memo:
-        parts[i] = memo[-1].replace('[memo]', '').strip()
+   ![PDF 第 2 页](img/02-page2.png)
 
-print(r.metadata['/Subject'])          # memo-order: 2,4,1,3
-order = [int(x) for x in r.metadata['/Subject'].split(':')[1].split(',')]
-print(''.join(parts[i] for i in order))
-```
+2. 翻到第 3 页，正文里明写了「顺序记在文档属性里」，而这一页自己的碎片是 `M1sc}`：
 
-实测输出：
+   ![PDF 第 3 页](img/03-page3.png)
 
-![PDF 文本与元数据](img/01-pdf.png)
+3. 回到文件本身查属性。终端里用 `pdfinfo`：
 
-第 2 页（碎片 `s3c{C0ngrats_`）：
+   ```bash
+   pdfinfo "Misc入门指北.pdf"
+   ```
 
-![PDF 第 2 页](img/02-page2.png)
+   输出的 `Subject` 一行是 `memo-order: 2,4,1,3`；用图形阅读器的话就是「文件 → 属性 → 描述」，同样能看到。
 
-第 3 页（明示「顺序记在文档属性里」）：
+4. 想要按页取出四段碎片，省得手抄，也可以用：
 
-![PDF 第 3 页](img/03-page3.png)
+   ```bash
+   pdftotext -layout "Misc入门指北.pdf" - | grep memo
+   ```
+
+   四行依次是 `s7ar7ed_w1th_`、`s3c{C0ngrats_`、`M1sc}`、`0n_gett1ng_`。
+
+5. 按 `2,4,1,3` 的顺序手工拼：
+
+   ```text
+   第 2 段  s3c{C0ngrats_
+   第 4 段  0n_gett1ng_
+   第 1 段  s7ar7ed_w1th_
+   第 3 段  M1sc}
+   ```
+
+   接起来就是 `s3c{C0ngrats_0n_gett1ng_s7ar7ed_w1th_M1sc}`。
 
 ## Flag
 
@@ -54,4 +61,4 @@ s3c{C0ngrats_0n_gett1ng_s7ar7ed_w1th_M1sc}
 ## 踩坑 / 备注
 
 - 四段碎片直接按页序拼是 `s7ar7ed_w1th_s3c{C0ngrats_M1sc}0n_gett1ng_`，一眼假；顺序线索只在元数据里。
-- `pypdf` 提取时每个字符可能单独成行（PDF 无空格分词），判定 `[memo]` 行要用 `startswith` 而不是整行等值匹配。
+- 有些阅读器不显示 `Subject`，`pdfinfo` 最稳；`pdftotext` 提取时 PDF 里没有真正的空格分词，`[memo]` 行可能被拆开，用 `grep memo` 而不是整行等值匹配。

@@ -22,15 +22,33 @@ WTNwT2FtVXhaR3hpUjAxM1lsZFdaazFxUVhsT2JEbFVUVEJPT1E9PQ==
 
 ## 关键步骤
 
-1. 第 1 层：`WTNwT2FtVXhaR3hpUjAxM1lsZFdaazFxUVhsT2JEbFVUVEJPT1E9PQ==` → `Y3pOamUxZGxiR013YldWZk1qQXlObDlUTTBOOQ==`
+1. 把题面那串字符复制到终端，第一层：
 
-2. 第 2 层 → `czNje1dlbGMwbWVfMjAyNl9TM0N9`
+   ```bash
+   echo 'WTNwT2FtVXhaR3hpUjAxM1lsZFdaazFxUVhsT2JEbFVUVEJPT1E9PQ==' | base64 -d
+   ```
 
-3. 第 3 层 → `s3c{Welc0me_2026_S3C}`，出现花括号，结束。
+   得到 `Y3pOamUxZGxiR013YldWZk1qQXlObDlUTTBOOQ==`，还是一串 base64。
 
-![题面给出的最外层 base64 密文](img/01-challenge.png)
+2. 第二层，把上一步的结果再喂给 `base64 -d`：
 
-![运行输出：三层解码链，最后一层即为 flag](img/02-run.png)
+   ```bash
+   echo 'Y3pOamUxZGxiR013YldWZk1qQXlObDlUTTBOOQ==' | base64 -d
+   ```
+
+   得到 `czNje1dlbGMwbWVfMjAyNl9TM0N9`，仍然是 base64 字符集。
+
+3. 第三层：
+
+   ```bash
+   echo 'czNje1dlbGMwbWVfMjAyNl9TM0N9' | base64 -d
+   ```
+
+   输出 `s3c{Welc0me_2026_S3C}`，出现花括号，到此为止。
+
+   ![题面给出的最外层 base64 密文](img/01-challenge.png)
+
+   ![运行输出：三层解码链，最后一层即为 flag](img/02-run.png)
 
 ## Flag
 
@@ -41,5 +59,6 @@ s3c{Welc0me_2026_S3C}
 ## 踩坑 / 备注
 
 - 只解一层会得到另一串 base64，很容易误以为「解出来是乱码」，注意输出的字符集和末尾的 `=`。
+- `base64 -d` 在 macOS 上是 `base64 -D`，Windows 的 PowerShell 里用 `[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('...'))`。
 - 手工抄写时 `0/O`、`1/l/I` 极易看错，用工具直接复制原串最稳。
 - 平台已解，flag 已提交。
